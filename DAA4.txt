@@ -1,0 +1,82 @@
+#include <stdio.h>
+
+#define MAX_ITEMS 100  // Maximum number of items
+
+// Structure to represent an item
+struct Item {
+    int weight;
+    int value;
+};
+
+// Function to swap two items
+void swap(struct Item* a, struct Item* b) {
+    struct Item temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Function to sort items by value-to-weight ratio in descending order
+void sortItemsByRatio(struct Item items[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            float r1 = (float)items[j].value / items[j].weight;
+            float r2 = (float)items[j + 1].value / items[j + 1].weight;
+            if (r1 < r2) {
+                swap(&items[j], &items[j + 1]);
+            }
+        }
+    }
+}
+
+// Function to calculate the maximum value for the fractional knapsack
+float fractionalKnapsack(struct Item items[], int n, int capacity) {
+    sortItemsByRatio(items, n);
+    float totalValue = 0.0;
+    int currentWeight = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (currentWeight + items[i].weight <= capacity) {
+            currentWeight += items[i].weight;
+            totalValue += items[i].value;
+        } else {
+            int remainingCapacity = capacity - currentWeight;
+            totalValue += items[i].value * ((float)remainingCapacity / items[i].weight);
+            break;
+        }
+    }
+
+    return totalValue;
+}
+
+int main() {
+    int n, capacity;
+    struct Item items[MAX_ITEMS];
+
+    // Input number of items
+    printf("Enter the number of items (max %d): ", MAX_ITEMS);
+    scanf("%d", &n);
+
+    if (n > MAX_ITEMS) {
+        printf("Error: Number of items exceeds maximum limit (%d).\n", MAX_ITEMS);
+        return 1;
+    }
+
+    // Input weight and value of each item
+    printf("Enter the weight and value of each item:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Item %d - Weight: ", i + 1);
+        scanf("%d", &items[i].weight);
+        printf("Item %d - Value: ", i + 1);
+        scanf("%d", &items[i].value);
+    }
+
+    // Input knapsack capacity
+    printf("Enter the capacity of the knapsack: ");
+    scanf("%d", &capacity);
+
+    // Calculate and display the maximum value
+    float maxValue = fractionalKnapsack(items, n, capacity);
+    printf("Maximum value in the knapsack = %.2f\n", maxValue);
+
+    return 0;
+}

@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define n 4  // Number of cities (adjusted from 5 to 4 as per the graph)
+#define MAX 1000000
+
+// Distance matrix between cities
+int dist[n + 1][n + 1] = {
+    {0, 0, 0, 0},
+    {0, 0, 10, 15},
+    {0, 10, 0, 25},
+    {0, 15, 25, 0}
+};
+
+// Memoization table for storing results
+int memo[n + 1][1 << (n + 1)];
+
+// Function to calculate the minimum cost using DP and bitmasking
+int fun(int i, int mask) {
+    // If all cities are visited, return the distance to the starting city
+    if (mask == ((1 << i) | 3)) 
+        return dist[1][i];
+
+    // If the result is already computed, return it
+    if (memo[i][mask] != 0)
+        return memo[i][mask];
+
+    int res = MAX;  // Set the initial result to a large value
+    for (int j = 1; j <= n; j++) {
+        // Check if city j has been visited and is not the current city
+        if ((mask & (1 << j)) && j != i && j != 1) {
+            // Recurse for city j and update the result
+            res = (res < fun(j, mask & (~(1 << i))) + dist[j][i]) ? res : fun(j, mask & (~(1 << i))) + dist[j][i];
+        }
+    }
+    // Memoize and return the result
+    return memo[i][mask] = res;
+}
+
+int main() {
+    int ans = MAX;
+    // Try all possible starting cities (except city 1)
+    for (int i = 1; i <= n; i++) {
+        ans = (ans < fun(i, (1 << (n + 1)) - 1) + dist[i][1]) ? ans : fun(i, (1 << (n + 1)) - 1) + dist[i][1];
+    }
+    
+    printf("The cost of the most efficient tour = %d\n", ans);
+    return 0;
+}

@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+// Function to swap two integers
+void swap(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Function to partition the array
+int partition(int arr[], int low, int high) {
+    int pivot = arr[low];
+    int i = low;
+    int j = high;
+
+    while (i < j) {
+        // Move `i` forward if elements are smaller than or equal to the pivot
+        while (arr[i] <= pivot && i < high) {
+            i++;
+        }
+        // Move `j` backward if elements are greater than the pivot
+        while (arr[j] > pivot && j > low) {
+            j--;
+        }
+        // Swap elements if `i` is still less than `j`
+        if (i < j) {
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    // Place the pivot in the correct position
+    swap(&arr[low], &arr[j]);
+    return j;
+}
+
+// Recursive Quick Sort function
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        // Find partition index
+        int partitionIndex = partition(arr, low, high);
+        // Recursively sort elements before and after the partition
+        quickSort(arr, low, partitionIndex - 1);
+        quickSort(arr, partitionIndex + 1, high);
+    }
+}
+
+int main() {
+    // Array declaration and size calculation
+    int arr[] = {7, 17, 96, 33, 18, 55, 100, 47, 45, 1, 31, 23, 25};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    // Print the original array
+    printf("Original array: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+
+    // Call Quick Sort
+    quickSort(arr, 0, n - 1);
+
+    // Print the sorted array
+    printf("\nSorted array: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+
+    return 0;
+}
